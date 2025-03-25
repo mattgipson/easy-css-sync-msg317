@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name: GitHub CSS Loader
- * Description: Pulls a CSS file from a GitHub repository and enqueues it on your WordPress site, with optional Webhook support for auto-refresh.
+ * Plugin Name: WP GitHUb Custom CSS Sync
+ * Description: Bypass the theme’s “Additional CSS” field by automatically fetching a custom CSS override from GitHub. Includes optional webhook support for instant updates.
  * Version:     1.1.0
  * Author:      MSG317
  * License:     GPL-2.0+
