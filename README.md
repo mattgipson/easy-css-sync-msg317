@@ -1,108 +1,93 @@
-# GitHub CSS Loader
+# Easy CSS Sync
 
-A simple WordPress plugin that pulls a CSS file from a GitHub repository (via a raw URL) and enqueues it on your site. It supports automatic updates through:
-- **WP-Cron** (periodic checks).
-- **Manual refresh** from the admin settings.
-- **GitHub Webhook** integration for instant updates when you push changes.
+Automatically fetches custom CSS overrides from GitHub and enqueues them on your WordPress site. Includes optional webhook support for near-instant updates whenever you push changes to your GitHub repo.
 
 ---
 
 ## Features
 
-- **Easy Configuration**: Specify the GitHub raw CSS URL in the admin panel.  
-- **Private Repo Support**: Optionally provide a GitHub token if your repo is private or if you want to avoid rate limits.  
-- **Webhook Refresh**: Instantly update CSS whenever you push changes to GitHub, using a secure webhook.  
-- **Scheduled & Manual**: Automatically update every hour (by default) via WP-Cron or refresh manually with a button.  
-- **Simple Inline Enqueue**: The fetched CSS is stored locally (in a WordPress option) and then enqueued inline for speed and simplicity.
+- **Simple Setup**: Enter your GitHub raw CSS URL in the WordPress admin.
+- **Private Repos**: Optionally provide a GitHub token for private repositories or to avoid rate limits.
+- **Instant Webhook Sync**: Update your site’s CSS automatically whenever you commit to GitHub (optional).
+- **Scheduled & Manual Updates**: Pull changes every hour via WP-Cron, or refresh CSS on-demand.
 
 ---
 
 ## Installation
 
-1. **Download or Clone** this repository.  
-2. Place the folder in your `wp-content/plugins/` directory, or zip it up and upload via your WordPress admin “Plugins > Add New > Upload Plugin.”  
-3. Activate the plugin in **Plugins** → **Installed Plugins** in your WordPress dashboard.
+1. **Upload or Install**  
+   - Download the plugin files and place them in your `wp-content/plugins/` directory, or zip them and upload via “Plugins > Add New > Upload Plugin” in WordPress.
+2. **Activate**  
+   - In your WordPress admin, go to **Plugins > Installed Plugins** and activate **Easy CSS Sync**.
 
 ---
 
 ## Configuration
 
-1. In your WordPress admin, go to **GitHub CSS Loader** (found in your main menu after activation).
-2. Enter the **GitHub Raw CSS URL**:  
-   - Example: `https://raw.githubusercontent.com/<user>/<repo>/<branch>/style.css`
-3. Optionally, add a **GitHub Token** (if needed):
-   - This is useful for private repositories or to avoid GitHub’s rate-limiting on public repos.
-4. (Optional) Provide a **GitHub Webhook Secret** for secure webhook calls.
-5. Click **Save Changes**.
+1. **Go to “Easy CSS Sync”** in the main WordPress admin menu.  
+2. **Set GitHub Raw CSS URL**  
+   - e.g. `https://raw.githubusercontent.com/<user>/<repo>/<branch>/styles.css`  
+3. **GitHub Token** (optional)  
+   - If your repo is private or you need to avoid rate limits, enter a personal access token.  
+4. **Webhook Secret** (optional)  
+   - For secure webhook validation when setting up GitHub Webhooks.
 
 ### Manual Refresh
 
-- On the plugin settings page, you can click **"Refresh CSS Now"**.  
-- The plugin will fetch the latest CSS from GitHub immediately and store it.
+- On the settings page, click **Refresh CSS Now** to immediately fetch the latest CSS from GitHub.
 
-### WP-Cron Scheduled Refresh
+### Automatic Updates
 
-- By default, the plugin fetches new CSS once every hour automatically.  
-- If you want a different schedule, you can customize the `wp_schedule_event` call in the plugin code.
+- By default, Easy CSS Sync fetches updates **hourly** using WP-Cron.  
+- (Optional) **GitHub Webhook**: With a configured webhook, changes will sync as soon as you push to your GitHub repo.
 
 ---
 
 ## GitHub Webhook Setup
 
-To get instant CSS updates whenever you push to your GitHub repo:
-
-1. **In WordPress**:
-   - Go to **GitHub CSS Loader** → **Settings**.
-   - Under **"GitHub Webhook Secret"**, set a secure, random secret string. You’ll use this in GitHub’s settings to help verify requests.
-   - Save your changes.
-   
-2. **In GitHub**:
-   - Go to your repository → **Settings** → **Webhooks**.
-   - Click **"Add webhook"**.
-   - **Payload URL**:  
-     - Use the following format, replacing `example.com` with your domain:  
-       `https://example.com/wp-json/ghcssloader/v1/webhook`
-   - **Content Type**: `application/json`
-   - **Secret**:  
-     - Paste the exact same secret you used in your WordPress plugin settings.
-   - **Event Triggers**:  
-     - Select **"Just the push event"** (or any event that should trigger a CSS update).
-   - Click **"Add webhook"** to save.
-
-#### Testing the Webhook
-- After saving, GitHub provides options to **“Ping”** or **“Redeliver”** the webhook.  
-- You can also do a quick test by making a commit/push to your repo.  
-- If everything is set up correctly, your site’s CSS will refresh immediately.
+1. **In WordPress**  
+   - Enter your **Webhook Secret** in the plugin settings (a secure string).
+2. **In GitHub**  
+   - Go to **Settings > Webhooks** for your repo.  
+   - Add a new webhook with:
+     - **Payload URL**: `https://example.com/wp-json/easy-css-sync/v1/webhook`  
+       (Replace `example.com` with your domain)  
+     - **Content type**: `application/json`  
+     - **Secret**: The same value you entered in your WordPress plugin settings.  
+     - **Events**: You can select “Push” or any event that should trigger an update.  
+   - Save the webhook.
 
 ---
 
-## Security Notes
+## Security & Best Practices
 
-- **Use HTTPS** (SSL/TLS) on your WordPress site so the secret and payload aren’t transmitted in plain text.  
-- If using a private repo, set a **Personal Access Token** under “GitHub Token” to allow authenticated requests.  
-- Always use a **strong Webhook Secret** when enabling the webhook feature, to prevent unauthorized triggers.
+- **Use HTTPS** for your WordPress site to ensure the secret is transmitted securely.
+- For private repos, use a [GitHub personal access token](https://github.com/settings/tokens).
+- Keep your WordPress core and all plugins updated for best security practices.
 
 ---
 
 ## FAQ
 
-**1) What if my CSS doesn’t update automatically?**  
-- Ensure your GitHub webhook is configured correctly.  
-- Check the plugin settings to make sure the URL and token are correct.  
-- Verify that WP-Cron is running on your site (some hosting environments disable it).
+1. **Why isn’t my CSS updating?**  
+   - Check that the **GitHub Raw URL** is valid and publicly accessible (or you have a valid token).  
+   - If relying on WP-Cron, ensure cron is running. Some hosts disable WP-Cron.  
+   - For webhooks, confirm you added the correct URL and secret in GitHub settings.
 
-**2) Can I store the CSS as a file instead of inline?**  
-- This plugin is designed to store CSS in the database for simplicity.  
-- You can modify the code to save the file in `wp-content/uploads` or another location and enqueue it from there if you prefer.
+2. **Can I see when the CSS was last updated?**  
+   - The plugin displays a “last synced” timestamp at the top of its settings page.
 
-**3) Does the plugin handle minification?**  
-- Not by default. If you want minification, you can either commit a minified CSS file to GitHub or implement additional build steps before pushing.
+3. **Where is the CSS stored?**  
+   - In a WordPress option. This means no external calls on every page load—only when you refresh or Cron triggers a fetch.
+
+4. **Is the plugin GPL?**  
+   - Yes. Easy CSS Sync is released under the [GPL-2.0+](https://www.gnu.org/licenses/gpl-2.0.html).
 
 ---
 
 ## Contributing
 
-Feel free to open issues or submit pull requests for improvements, bug fixes, or new features.
+Interested in contributing or submitting ideas? Feel free to open a pull request or file an issue on the [GitHub repository](#).
 
 ---
 
