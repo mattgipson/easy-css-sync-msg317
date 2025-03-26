@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Easy CSS Sync
- * Plugin URI:  https://msg317.com
+ * Plugin URI:  https://github.com/mattgipson/easy-css-sync-msg317
  * Description: Bypass the theme’s "Additional CSS" field by automatically fetching custom CSS overrides from GitHub. Includes optional webhook support for instant updates.
  * Version:     1.0.0
  * Text Domain: easy-css-sync
