@@ -149,7 +149,7 @@ class Easy_CSS_Sync {
             'manage_options',
             $this->option_name,
             [ $this, 'settings_page' ],
-            'dashicons-art',
+            'dashicons-repeat',
             100
         );
     }
